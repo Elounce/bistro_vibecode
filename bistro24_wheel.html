@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Колесо меню Bistro 24</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+            padding: 30px 25px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5),
+                inset 0 1px 1px rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #ffffff;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            text-align: center;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 10px rgba(255, 255, 255, 0.3);
+        }
+
+        .subtitle {
+            color: #ffd700;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            font-weight: 300;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .wheel-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 450px;
+            aspect-ratio: 1/1;
+            margin: 0 auto 20px;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.6));
+            transition: filter 0.3s;
+        }
+
+        canvas.spinning {
+            filter: drop-shadow(0 15px 30px rgba(255, 215, 0, 0.4));
+        }
+
+        /* Указатель (стрелка) */
+        .pointer {
+            position: absolute;
+            top: -18px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-top: 35px solid #ff4d4d;
+            filter: drop-shadow(0 5px 8px rgba(255, 0, 0, 0.5));
+            z-index: 10;
+            transition: transform 0.2s;
+        }
+
+        .pointer::after {
+            content: '';
+            position: absolute;
+            top: -38px;
+            left: -10px;
+            width: 20px;
+            height: 20px;
+            background: #ff4d4d;
+            border-radius: 50%;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
+        }
+
+        /* Кнопка */
+        .btn-spin {
+            background: linear-gradient(180deg, #ffd700 0%, #ffaa00 100%);
+            color: #1a1a2e;
+            border: none;
+            padding: 16px 50px;
+            font-size: 1.4rem;
+            font-weight: 800;
+            border-radius: 50px;
+            cursor: pointer;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            box-shadow: 0 10px 25px rgba(255, 170, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.6);
+            transition: all 0.3s ease;
+            margin: 10px 0 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-spin:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(255, 170, 0, 0.7),
+                inset 0 1px 0 rgba(255, 255, 255, 0.6);
+            background: linear-gradient(180deg, #ffe44d 0%, #ffbb33 100%);
+        }
+
+        .btn-spin:active:not(:disabled) {
+            transform: translateY(0);
+            box-shadow: 0 5px 15px rgba(255, 170, 0, 0.5);
+        }
+
+        .btn-spin:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            filter: grayscale(20%);
+        }
+
+        /* Результат */
+        .result {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 15px 25px;
+            color: #ffffff;
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-align: center;
+            min-height: 55px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            margin-bottom: 20px;
+            width: 100%;
+            transition: all 0.4s ease;
+            word-break: break-word;
+        }
+
+        .result.win {
+            background: rgba(255, 215, 0, 0.2);
+            border-color: #ffd700;
+            animation: pulse 0.6s ease 3;
+        }
+
+        @keyframes pulse {
+            0%,
+            100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.04);
+            }
+        }
+
+        /* Редактор меню */
+        .editor {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .editor label {
+            color: #aaa;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .editor textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.3);
+            color: #ffffff;
+            font-size: 1rem;
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+            outline: none;
+            transition: border 0.3s;
+        }
+
+        .editor textarea:focus {
+            border-color: #ffd700;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
+        }
+
+        .btn-update {
+            background: transparent;
+            color: #ffd700;
+            border: 2px solid #ffd700;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: all 0.3s;
+            align-self: center;
+        }
+
+        .btn-update:hover {
+            background: rgba(255, 215, 0, 0.15);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px 15px;
+                border-radius: 20px;
+            }
+            h1 {
+                font-size: 1.5rem;
+            }
+            .btn-spin {
+                padding: 14px 35px;
+                font-size: 1.2rem;
+            }
+            .pointer {
+                border-left-width: 15px;
+                border-right-width: 15px;
+                border-top-width: 28px;
+                top: -14px;
+            }
+            .pointer::after {
+                width: 16px;
+                height: 16px;
+                top: -31px;
+                left: -8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎡 Колесо меню</h1>
+        <p class="subtitle">Bistro 24</p>
+
+        <div class="wheel-wrapper">
+            <div class="pointer"></div>
+            <canvas id="wheelCanvas" width="500" height="500"></canvas>
+        </div>
+
+        <button class="btn-spin" id="spinButton">Крутить</button>
+
+        <div class="result" id="resultDisplay">Нажмите «Крутить» 🍽️</div>
+
+        <div class="editor">
+            <label for="menuItems">📝 Редактировать меню (через запятую):</label>
+            <textarea id="menuItems">Запеченный Ролл с курицей, Хот-Дог в Булке, Coca-Cola L [AT], д Соус Heinz Кетчуп, Соус кунжутный, Коктейль  Шоколад-банан, Салат Греческий, Айс Кофе арахисовый, Курица по- арабски, Боул с креветками, Пицца Том Ям, Запеченный Ролл Снежный краб, Хот-Дог в Лаваше, д Соус Heinz Сырный, Доставка до двери (с 1 по 4 этаж), Coca-Cola M стекло [AT], Соус соевый, Коктейль Банан-малина, Салат по-домашнему, Айс Кофе классика, Боул с курицей, Пицца Песто, Ролл Бистро24, Пицца Ассорти, Хот-Дог в Тандыре, д Фри, Coca-Cola S ЖБ [AT], Соус спайси, Коктейль Банановый, Салат Цезарь с креветкой, Айс Кофе урбеч, Боул с лососем, Доставка до двери (с 5 по 9 этаж), Ролл Горячий Ойси, Пицца Жюльен, Шаурма в Тандыре, Pepsi L [AT], Коктейль Молочный, д Картофель по-деревенски, Салат Цезарь с курицей, Соус Чили по-княжески 40 мл, Пицца Куриная, Сэндвич с наггетсами , Ролл Запеченный Ойси, Pepsi M стекло [AT], Коктейль Клубничный, д Бургер Куриный, Удон с креветками, Соус Чили по-княжески 200 мл, Ролл Горячий Шик, Пицца Маргарита, Шаурма в Булке, Pepsi S [AT], Коктейль Шоколадный, д Бургер Мясной, Удон с курицей, Ролл Зеленый дракон, Пицца Мясная, Шаурма в Кляре, Fanta L [AT], Коктейль Спортивный, Фетучини с курицей, д Бургер Мясной закрытый, Ролл Калифорния с крабом, Пицца Ойси, Fanta M стекло [AT], Бургер с наггетсами, Том Ям из морепродуктов, Жульен в кляре, Ролл Калифорния с креветкой, Пицца Охотничья, Fanta S [AT], д Креветки в Кляре Эби Темпура , Мини шаурма в кляре, Ролл Калифорния с курицей, Пицца Пепперони, Шаурма в Лаваше, Sprite L, д Фирменные наггетсы, Ролл Калифорния с лососем, Пицца по-деревенски, Sprite M стекло [AT], Мини шаурма в лаваше, Ролл Нори Маки креветка, Пицца Цезарь, Шаурма Арабская, Sprite S, Ролл Нори Маки огурец, Пицца 4 Сезона, Шаурма в Тарелке , Вико в Ассортименте, Пицца 4 Сыра, Ролл Нори Маки с лососем, Вико Апельсин, Ролл Ойси, Половинка Мясо-Курица, Ролл Сенсей, Половинка Пепперони - 4 Сыра, Палпи Апельсин L [AT], Ролл Стамбульская ночь, Хачапури с курицей, Палпи Апельсин S [AT], Ролл Унатори, Хачапури с мясом , Ролл Филадельфия, Хачапури с сыром , Апельсин L [AT], Ролл Цезарь Люкс , Апельсин M 0,5 [AT], Хачапури с колбасой, Ролл Цезарь с креветкой, Курага L [AT], Ролл Цезарь с курицей, Курага M 0,5 [AT], Мохито S ж/б [AT], Ролл Ямамото, Вода Горная Лимон S, Ролл Япоша, Вода Горная S, Сет Бистро 24, Денеб М 0,5, Сет Малый, Денеб Клубника М 0,5, Денеб ж/б 0,45, Денеб L, Холодный сет, Горячий сет, Менди ж/б 0,45, Менди L, Менди S, Барбикан , Милаф Кола 0,24 мл, Royal гранат [AT], Добрый Кола L, Добрый Фанта L, Тоник 0,3 л., Кинза 0,3, Колд Брю, Меринда S</textarea>
+            <button class="btn-update" id="updateButton">🔄 Обновить колесо</button>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // DOM элементы
+            const canvas = document.getElementById('wheelCanvas');
+            const ctx = canvas.getContext('2d');
+            const spinButton = document.getElementById('spinButton');
+            const resultDisplay = document.getElementById('resultDisplay');
+            const menuTextarea = document.getElementById('menuItems');
+            const updateButton = document.getElementById('updateButton');
+            const wheelWrapper = document.querySelector('.wheel-wrapper');
+
+            // Параметры колеса
+            const PI = Math.PI;
+            const TAU = 2 * PI;
+            let items = [];
+            let rotation = 0; // текущий угол поворота в радианах
+            let isSpinning = false;
+            let animationId = null;
+
+            // Цвета для секторов
+            const colorPalette = [
+                '#FF6B6B', '#4ECDC4', '#FFE66D', '#1A535C',
+                '#FF9F1C', '#6C5CE7', '#FD79A8', '#00B894',
+                '#FDCB6E', '#E17055', '#74B9FF', '#55EFC4',
+                '#FAB1A0', '#81ECEC', '#FFB142', '#B71540'
+            ];
+
+            // Инициализация
+            function parseItems() {
+                const raw = menuTextarea.value;
+                items = raw.split(',')
+                    .map(s => s.trim())
+                    .filter(s => s.length > 0);
+                if (items.length < 2) {
+                    items = ['Пицца', 'Суши', 'Бургер', 'Салат'];
+                    menuTextarea.value = items.join(', ');
+                }
+            }
+
+            function drawWheel() {
+                const w = canvas.width;
+                const h = canvas.height;
+                const centerX = w / 2;
+                const centerY = h / 2;
+                const radius = Math.min(centerX, centerY) - 15;
+
+                ctx.clearRect(0, 0, w, h);
+
+                if (items.length === 0) return;
+
+                const arcSize = TAU / items.length;
+
+                // Рисуем сектора
+                for (let i = 0; i < items.length; i++) {
+                    const startAngle = rotation - PI / 2 + i * arcSize;
+                    const endAngle = startAngle + arcSize;
+
+                    // Заливка сектора
+                    ctx.beginPath();
+                    ctx.moveTo(centerX, centerY);
+                    ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+                    ctx.closePath();
+
+                    const color = colorPalette[i % colorPalette.length];
+                    ctx.fillStyle = color;
+                    ctx.fill();
+
+                    // Обводка
+                    ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+
+                    // Текст
+                    ctx.save();
+                    ctx.translate(centerX, centerY);
+                    ctx.rotate(startAngle + arcSize / 2);
+                    ctx.textAlign = 'right';
+                    ctx.fillStyle = '#ffffff';
+                    ctx.font = 'bold 16px "Segoe UI", Arial, sans-serif';
+                    ctx.shadowColor = 'rgba(0,0,0,0.5)';
+                    ctx.shadowBlur = 6;
+                    ctx.shadowOffsetX = 2;
+                    ctx.shadowOffsetY = 2;
+
+                    const text = items[i];
+                    const maxWidth = radius - 40;
+                    let displayText = text;
+
+                    // Если текст слишком длинный — обрезаем
+                    if (ctx.measureText(text).width > maxWidth) {
+                        let truncated = text;
+                        while (ctx.measureText(truncated + '…').width > maxWidth && truncated.length > 0) {
+                            truncated = truncated.slice(0, -1);
+                        }
+                        displayText = truncated + '…';
+                    }
+
+                    ctx.fillText(displayText, radius - 25, 6);
+                    ctx.restore();
+                }
+
+                // Центральный круг
+                const centerCircle = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, 35);
+                centerCircle.addColorStop(0, '#ffffff');
+                centerCircle.addColorStop(0.7, '#e0e0e0');
+                centerCircle.addColorStop(1, '#aaaaaa');
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, 35, 0, TAU);
+                ctx.fillStyle = centerCircle;
+                ctx.fill();
+                ctx.strokeStyle = 'rgba(255,255,255,0.8)';
+                ctx.lineWidth = 3;
+                ctx.stroke();
+
+                // Декоративные точки на центральном круге
+                for (let i = 0; i < 12; i++) {
+                    const angle = (i / 12) * TAU;
+                    const dotX = centerX + Math.cos(angle) * 25;
+                    const dotY = centerY + Math.sin(angle) * 25;
+                    ctx.beginPath();
+                    ctx.arc(dotX, dotY, 3, 0, TAU);
+                    ctx.fillStyle = '#888';
+                    ctx.fill();
+                }
+            }
+
+            // Определение победителя
+            function getWinner() {
+                if (items.length === 0) return '';
+                const arcSize = TAU / items.length;
+                // Нормализуем угол указателя (верхняя точка = -PI/2 = 3*PI/2)
+                const pointerAngle = (3 * PI / 2) % TAU;
+
+                for (let i = 0; i < items.length; i++) {
+                    let start = (rotation - PI / 2 + i * arcSize) % TAU;
+                    let end = (start + arcSize) % TAU;
+
+                    // Нормализуем углы в [0, 2*PI)
+                    if (start < 0) start += TAU;
+                    if (end < 0) end += TAU;
+
+                    if (end < start) {
+                        // Сектор пересекает 0 радиан
+                        if (pointerAngle >= start || pointerAngle < end) {
+                            return items[i];
+                        }
+                    } else {
+                        if (pointerAngle >= start && pointerAngle < end) {
+                            return items[i];
+                        }
+                    }
+                }
+                // На всякий случай вернём первый элемент
+                return items[0];
+            }
+
+            // Анимация вращения
+            function spin() {
+                if (isSpinning || items.length === 0) return;
+
+                isSpinning = true;
+                spinButton.disabled = true;
+                resultDisplay.classList.remove('win');
+                resultDisplay.textContent = 'Крутим... 🎰';
+                canvas.classList.add('spinning');
+
+                // Случайные параметры вращения
+                const extraTurns = 4 + Math.floor(Math.random() * 6); // 4-9 полных оборотов
+                const randomAngle = Math.random() * TAU; // случайный доворот
+                const targetRotation = rotation + extraTurns * TAU + randomAngle;
+
+                const startRotation = rotation;
+                const totalRotation = targetRotation - startRotation;
+                const duration = 4000 + Math.random() * 2500; // 4-6.5 секунд
+                const startTime = performance.now();
+
+                // Функция плавности (ease-out кубическая)
+                function easeOutCubic(t) {
+                    return 1 - Math.pow(1 - t, 3);
+                }
+
+                function animate(currentTime) {
+                    const elapsed = currentTime - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+                    const easedProgress = easeOutCubic(progress);
+
+                    rotation = startRotation + totalRotation * easedProgress;
+                    drawWheel();
+
+                    if (progress < 1) {
+                        animationId = requestAnimationFrame(animate);
+                    } else {
+                        // Остановка
+                        rotation = targetRotation % TAU;
+                        drawWheel();
+                        onSpinComplete();
+                    }
+                }
+
+                animationId = requestAnimationFrame(animate);
+            }
+
+            function onSpinComplete() {
+                isSpinning = false;
+                spinButton.disabled = false;
+                canvas.classList.remove('spinning');
+                animationId = null;
+
+                const winner = getWinner();
+                resultDisplay.textContent = `🎉 Выпало: ${winner}`;
+                resultDisplay.classList.add('win');
+
+                // Виброотклик на мобильных устройствах
+                if (navigator.vibrate) {
+                    navigator.vibrate([100, 50, 100]);
+                }
+
+                // Убираем анимацию pulse через некоторое время
+                setTimeout(() => {
+                    resultDisplay.classList.remove('win');
+                }, 2000);
+            }
+
+            function resetWheel() {
+                if (isSpinning) {
+                    cancelAnimationFrame(animationId);
+                    isSpinning = false;
+                    spinButton.disabled = false;
+                    canvas.classList.remove('spinning');
+                    animationId = null;
+                }
+                rotation = 0;
+                parseItems();
+                drawWheel();
+                resultDisplay.textContent = 'Нажмите «Крутить» 🍽️';
+                resultDisplay.classList.remove('win');
+            }
+
+            // Обработчики событий
+            spinButton.addEventListener('click', spin);
+
+            updateButton.addEventListener('click', () => {
+                resetWheel();
+            });
+
+            // Инициализация при загрузке
+            parseItems();
+            drawWheel();
+
+            // Поддержка клавиши пробел для вращения
+            document.addEventListener('keydown', (e) => {
+                if (e.code === 'Space' && !isSpinning && document.activeElement !== menuTextarea) {
+                    e.preventDefault();
+                    spin();
+                }
+            });
+
+            // Адаптация размера канваса при ресайзе (сохраняем пропорции)
+            function handleResize() {
+                // Canvas сохраняет внутренний размер 500x500,
+                // CSS растягивает его, качество остаётся хорошим.
+            }
+            window.addEventListener('resize', handleResize);
+        })();
+    </script>
+</body>
+</html>
