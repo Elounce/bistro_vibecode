@@ -273,12 +273,16 @@
         <div class="result" id="resultDisplay">Нажмите «Крутить» 🍽️</div>
 
         <div class="editor">
-            <label for="menuItems">📝 Редактировать меню (через запятую):</label>
-            <textarea id="menuItems">Запеченный Ролл с курицей, Хот-Дог в Булке, Coca-Cola L [AT], д Соус Heinz Кетчуп, Соус кунжутный, Коктейль  Шоколад-банан, Салат Греческий, Айс Кофе арахисовый, Курица по- арабски, Боул с креветками, Пицца Том Ям, Запеченный Ролл Снежный краб, Хот-Дог в Лаваше, д Соус Heinz Сырный, Доставка до двери (с 1 по 4 этаж), Coca-Cola M стекло [AT], Соус соевый, Коктейль Банан-малина, Салат по-домашнему, Айс Кофе классика, Боул с курицей, Пицца Песто, Ролл Бистро24, Пицца Ассорти, Хот-Дог в Тандыре, д Фри, Coca-Cola S ЖБ [AT], Соус спайси, Коктейль Банановый, Салат Цезарь с креветкой, Айс Кофе урбеч, Боул с лососем, Доставка до двери (с 5 по 9 этаж), Ролл Горячий Ойси, Пицца Жюльен, Шаурма в Тандыре, Pepsi L [AT], Коктейль Молочный, д Картофель по-деревенски, Салат Цезарь с курицей, Соус Чили по-княжески 40 мл, Пицца Куриная, Сэндвич с наггетсами , Ролл Запеченный Ойси, Pepsi M стекло [AT], Коктейль Клубничный, д Бургер Куриный, Удон с креветками, Соус Чили по-княжески 200 мл, Ролл Горячий Шик, Пицца Маргарита, Шаурма в Булке, Pepsi S [AT], Коктейль Шоколадный, д Бургер Мясной, Удон с курицей, Ролл Зеленый дракон, Пицца Мясная, Шаурма в Кляре, Fanta L [AT], Коктейль Спортивный, Фетучини с курицей, д Бургер Мясной закрытый, Ролл Калифорния с крабом, Пицца Ойси, Fanta M стекло [AT], Бургер с наггетсами, Том Ям из морепродуктов, Жульен в кляре, Ролл Калифорния с креветкой, Пицца Охотничья, Fanta S [AT], д Креветки в Кляре Эби Темпура , Мини шаурма в кляре, Ролл Калифорния с курицей, Пицца Пепперони, Шаурма в Лаваше, Sprite L, д Фирменные наггетсы, Ролл Калифорния с лососем, Пицца по-деревенски, Sprite M стекло [AT], Мини шаурма в лаваше, Ролл Нори Маки креветка, Пицца Цезарь, Шаурма Арабская, Sprite S, Ролл Нори Маки огурец, Пицца 4 Сезона, Шаурма в Тарелке , Вико в Ассортименте, Пицца 4 Сыра, Ролл Нори Маки с лососем, Вико Апельсин, Ролл Ойси, Половинка Мясо-Курица, Ролл Сенсей, Половинка Пепперони - 4 Сыра, Палпи Апельсин L [AT], Ролл Стамбульская ночь, Хачапури с курицей, Палпи Апельсин S [AT], Ролл Унатори, Хачапури с мясом , Ролл Филадельфия, Хачапури с сыром , Апельсин L [AT], Ролл Цезарь Люкс , Апельсин M 0,5 [AT], Хачапури с колбасой, Ролл Цезарь с креветкой, Курага L [AT], Ролл Цезарь с курицей, Курага M 0,5 [AT], Мохито S ж/б [AT], Ролл Ямамото, Вода Горная Лимон S, Ролл Япоша, Вода Горная S, Сет Бистро 24, Денеб М 0,5, Сет Малый, Денеб Клубника М 0,5, Денеб ж/б 0,45, Денеб L, Холодный сет, Горячий сет, Менди ж/б 0,45, Менди L, Менди S, Барбикан , Милаф Кола 0,24 мл, Royal гранат [AT], Добрый Кола L, Добрый Фанта L, Тоник 0,3 л., Кинза 0,3, Колд Брю, Меринда S</textarea>
+<label for="menuItems">📝 Редактировать меню (каждый пункт с новой строки):</label>
+<textarea id="menuItems" rows="6">Пицца
+Суши
+Бургер
+Салат</textarea>
             <button class="btn-update" id="updateButton">🔄 Обновить колесо</button>
         </div>
     </div>
 
+    <script src="menu.js"></script>
     <script>
         (function() {
             // DOM элементы
@@ -289,6 +293,9 @@
             const menuTextarea = document.getElementById('menuItems');
             const updateButton = document.getElementById('updateButton');
             const wheelWrapper = document.querySelector('.wheel-wrapper');
+
+            const offscreenCanvas = document.createElement('canvas');
+            const offCtx = offscreenCanvas.getContext('2d');
 
             // Параметры колеса
             const PI = Math.PI;
@@ -309,12 +316,80 @@
             // Инициализация
             function parseItems() {
                 const raw = menuTextarea.value;
-                items = raw.split(',')
+                items = raw.split('\n')
                     .map(s => s.trim())
                     .filter(s => s.length > 0);
                 if (items.length < 2) {
                     items = ['Пицца', 'Суши', 'Бургер', 'Салат'];
-                    menuTextarea.value = items.join(', ');
+                    menuTextarea.value = items.join('\n');
+                }
+                buildWheelImage();
+            }
+
+            function initMenu() {
+                if (typeof MENU_ITEMS !== 'undefined' && MENU_ITEMS.length >= 2) {
+                    menuTextarea.value = MENU_ITEMS.join('\n');
+                }
+                parseItems();
+                drawWheel();
+            }
+
+            function buildWheelImage() {
+                const w = canvas.width;
+                const h = canvas.height;
+                const centerX = w / 2;
+                const centerY = h / 2;
+                const radius = Math.min(centerX, centerY) - 15;
+
+                offscreenCanvas.width = w;
+                offscreenCanvas.height = h;
+
+                if (items.length === 0) return;
+
+                const arcSize = TAU / items.length;
+
+                for (let i = 0; i < items.length; i++) {
+                    const startAngle = -PI / 2 + i * arcSize;
+                    const endAngle = startAngle + arcSize;
+
+                    offCtx.beginPath();
+                    offCtx.moveTo(centerX, centerY);
+                    offCtx.arc(centerX, centerY, radius, startAngle, endAngle);
+                    offCtx.closePath();
+
+                    const color = colorPalette[i % colorPalette.length];
+                    offCtx.fillStyle = color;
+                    offCtx.fill();
+
+                    offCtx.strokeStyle = 'rgba(255,255,255,0.3)';
+                    offCtx.lineWidth = 2;
+                    offCtx.stroke();
+
+                    offCtx.save();
+                    offCtx.translate(centerX, centerY);
+                    offCtx.rotate(startAngle + arcSize / 2);
+                    offCtx.textAlign = 'right';
+                    offCtx.fillStyle = '#ffffff';
+                    offCtx.font = 'bold 16px "Segoe UI", Arial, sans-serif';
+                    offCtx.shadowColor = 'rgba(0,0,0,0.5)';
+                    offCtx.shadowBlur = 6;
+                    offCtx.shadowOffsetX = 2;
+                    offCtx.shadowOffsetY = 2;
+
+                    const text = items[i];
+                    const maxWidth = radius - 40;
+                    let displayText = text;
+
+                    if (offCtx.measureText(text).width > maxWidth) {
+                        let truncated = text;
+                        while (offCtx.measureText(truncated + '…').width > maxWidth && truncated.length > 0) {
+                            truncated = truncated.slice(0, -1);
+                        }
+                        displayText = truncated + '…';
+                    }
+
+                    offCtx.fillText(displayText, radius - 25, 6);
+                    offCtx.restore();
                 }
             }
 
@@ -323,64 +398,18 @@
                 const h = canvas.height;
                 const centerX = w / 2;
                 const centerY = h / 2;
-                const radius = Math.min(centerX, centerY) - 15;
 
                 ctx.clearRect(0, 0, w, h);
 
                 if (items.length === 0) return;
 
-                const arcSize = TAU / items.length;
+                ctx.save();
+                ctx.translate(centerX, centerY);
+                ctx.rotate(rotation);
+                ctx.translate(-centerX, -centerY);
+                ctx.drawImage(offscreenCanvas, 0, 0);
+                ctx.restore();
 
-                // Рисуем сектора
-                for (let i = 0; i < items.length; i++) {
-                    const startAngle = rotation - PI / 2 + i * arcSize;
-                    const endAngle = startAngle + arcSize;
-
-                    // Заливка сектора
-                    ctx.beginPath();
-                    ctx.moveTo(centerX, centerY);
-                    ctx.arc(centerX, centerY, radius, startAngle, endAngle);
-                    ctx.closePath();
-
-                    const color = colorPalette[i % colorPalette.length];
-                    ctx.fillStyle = color;
-                    ctx.fill();
-
-                    // Обводка
-                    ctx.strokeStyle = 'rgba(255,255,255,0.3)';
-                    ctx.lineWidth = 2;
-                    ctx.stroke();
-
-                    // Текст
-                    ctx.save();
-                    ctx.translate(centerX, centerY);
-                    ctx.rotate(startAngle + arcSize / 2);
-                    ctx.textAlign = 'right';
-                    ctx.fillStyle = '#ffffff';
-                    ctx.font = 'bold 16px "Segoe UI", Arial, sans-serif';
-                    ctx.shadowColor = 'rgba(0,0,0,0.5)';
-                    ctx.shadowBlur = 6;
-                    ctx.shadowOffsetX = 2;
-                    ctx.shadowOffsetY = 2;
-
-                    const text = items[i];
-                    const maxWidth = radius - 40;
-                    let displayText = text;
-
-                    // Если текст слишком длинный — обрезаем
-                    if (ctx.measureText(text).width > maxWidth) {
-                        let truncated = text;
-                        while (ctx.measureText(truncated + '…').width > maxWidth && truncated.length > 0) {
-                            truncated = truncated.slice(0, -1);
-                        }
-                        displayText = truncated + '…';
-                    }
-
-                    ctx.fillText(displayText, radius - 25, 6);
-                    ctx.restore();
-                }
-
-                // Центральный круг
                 const centerCircle = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, 35);
                 centerCircle.addColorStop(0, '#ffffff');
                 centerCircle.addColorStop(0.7, '#e0e0e0');
@@ -393,7 +422,6 @@
                 ctx.lineWidth = 3;
                 ctx.stroke();
 
-                // Декоративные точки на центральном круге
                 for (let i = 0; i < 12; i++) {
                     const angle = (i / 12) * TAU;
                     const dotX = centerX + Math.cos(angle) * 25;
@@ -525,8 +553,7 @@
             });
 
             // Инициализация при загрузке
-            parseItems();
-            drawWheel();
+            initMenu();
 
             // Поддержка клавиши пробел для вращения
             document.addEventListener('keydown', (e) => {
