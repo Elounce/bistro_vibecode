@@ -12,194 +12,457 @@
         }
 
         body {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            background: linear-gradient(135deg, #101524 0%, #16213e 50%, #0c2340 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-family: 'Segoe UI', Arial, sans-serif;
-            padding: 20px;
+            font-family: 'Segoe UI', system-ui, -apple-system, Arial, sans-serif;
+            padding: 20px 12px;
+            color: #ffffff;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        #confettiCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 100;
         }
 
         .container {
             background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(20px);
-            border-radius: 30px;
-            padding: 30px 25px;
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5),
-                inset 0 1px 1px rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-radius: 28px;
+            padding: 24px 20px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.55),
+                inset 0 1px 1px rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.12);
             display: flex;
             flex-direction: column;
             align-items: center;
-            max-width: 600px;
+            max-width: 620px;
             width: 100%;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-top {
+            display: flex;
+            width: 100%;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2px;
+        }
+
+        .sound-toggle {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+            width: 38px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.1rem;
+            color: #ffd700;
+            transition: all 0.25s ease;
+        }
+
+        .sound-toggle:hover {
+            background: rgba(255, 215, 0, 0.2);
+            transform: scale(1.08);
         }
 
         h1 {
             color: #ffffff;
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 5px;
+            font-size: 1.85rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
             text-align: center;
-            letter-spacing: 1px;
-            text-shadow: 0 2px 10px rgba(255, 255, 255, 0.3);
+            text-shadow: 0 2px 12px rgba(255, 255, 255, 0.25);
+            flex-grow: 1;
         }
 
         .subtitle {
             color: #ffd700;
-            font-size: 0.9rem;
-            margin-bottom: 20px;
-            font-weight: 300;
+            font-size: 0.85rem;
+            margin-bottom: 16px;
+            font-weight: 500;
             letter-spacing: 3px;
             text-transform: uppercase;
+            text-align: center;
+        }
+
+        /* Категории и фильтры */
+        .categories-wrapper {
+            width: 100%;
+            margin-bottom: 18px;
+        }
+
+        .categories-label {
+            font-size: 0.78rem;
+            color: #a4b0be;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .categories-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .chip-btn {
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #e0e0e0;
+            padding: 7px 13px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .chip-btn:hover {
+            background: rgba(255, 215, 0, 0.18);
+            border-color: rgba(255, 215, 0, 0.4);
+            color: #ffffff;
+            transform: translateY(-1px);
+        }
+
+        .chip-btn.active {
+            background: linear-gradient(135deg, #ffd700 0%, #ff9f1a 100%);
+            color: #121826;
+            border-color: #ffd700;
+            box-shadow: 0 4px 12px rgba(255, 170, 0, 0.35);
+            font-weight: 700;
+        }
+
+        .chip-btn.badge-special {
+            border-color: #ff9f1a;
+            position: relative;
         }
 
         .wheel-wrapper {
             position: relative;
             width: 100%;
-            max-width: 450px;
+            max-width: 440px;
             aspect-ratio: 1/1;
-            margin: 0 auto 20px;
+            margin: 0 auto 16px;
         }
 
-        canvas {
+        canvas#wheelCanvas {
             width: 100%;
             height: 100%;
             display: block;
-            filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.6));
+            filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.65));
             transition: filter 0.3s;
         }
 
-        canvas.spinning {
-            filter: drop-shadow(0 15px 30px rgba(255, 215, 0, 0.4));
+        canvas#wheelCanvas.spinning {
+            filter: drop-shadow(0 15px 35px rgba(255, 215, 0, 0.45));
         }
 
         /* Указатель (стрелка) */
         .pointer {
             position: absolute;
-            top: -18px;
+            top: -16px;
             left: 50%;
             transform: translateX(-50%);
             width: 0;
             height: 0;
-            border-left: 20px solid transparent;
-            border-right: 20px solid transparent;
-            border-top: 35px solid #ff4d4d;
-            filter: drop-shadow(0 5px 8px rgba(255, 0, 0, 0.5));
+            border-left: 18px solid transparent;
+            border-right: 18px solid transparent;
+            border-top: 34px solid #ff4757;
+            filter: drop-shadow(0 4px 8px rgba(255, 71, 87, 0.6));
             z-index: 10;
-            transition: transform 0.2s;
+            transform-origin: 50% 0;
+            transition: transform 0.08s ease-out;
+        }
+
+        .pointer.tick {
+            transform: translateX(-50%) rotate(-12deg) scale(1.05);
         }
 
         .pointer::after {
             content: '';
             position: absolute;
-            top: -38px;
-            left: -10px;
-            width: 20px;
-            height: 20px;
-            background: #ff4d4d;
+            top: -36px;
+            left: -9px;
+            width: 18px;
+            height: 18px;
+            background: #ff4757;
             border-radius: 50%;
-            box-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
+            box-shadow: 0 0 16px rgba(255, 71, 87, 0.9);
         }
 
-        /* Кнопка */
+        /* Кнопка вращения */
         .btn-spin {
-            background: linear-gradient(180deg, #ffd700 0%, #ffaa00 100%);
-            color: #1a1a2e;
+            background: linear-gradient(180deg, #ffd700 0%, #ff9f1a 100%);
+            color: #121826;
             border: none;
-            padding: 16px 50px;
-            font-size: 1.4rem;
+            padding: 15px 48px;
+            font-size: 1.35rem;
             font-weight: 800;
             border-radius: 50px;
             cursor: pointer;
             letter-spacing: 2px;
             text-transform: uppercase;
-            box-shadow: 0 10px 25px rgba(255, 170, 0, 0.5),
+            box-shadow: 0 10px 25px rgba(255, 159, 26, 0.45),
                 inset 0 1px 0 rgba(255, 255, 255, 0.6);
-            transition: all 0.3s ease;
-            margin: 10px 0 20px;
+            transition: all 0.25s ease;
+            margin: 6px 0 16px;
             position: relative;
             overflow: hidden;
         }
 
         .btn-spin:hover:not(:disabled) {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 35px rgba(255, 170, 0, 0.7),
-                inset 0 1px 0 rgba(255, 255, 255, 0.6);
-            background: linear-gradient(180deg, #ffe44d 0%, #ffbb33 100%);
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 14px 32px rgba(255, 159, 26, 0.65),
+                inset 0 1px 0 rgba(255, 255, 255, 0.7);
+            background: linear-gradient(180deg, #ffe04d 0%, #ffa929 100%);
         }
 
         .btn-spin:active:not(:disabled) {
-            transform: translateY(0);
-            box-shadow: 0 5px 15px rgba(255, 170, 0, 0.5);
+            transform: translateY(0) scale(0.99);
+            box-shadow: 0 6px 15px rgba(255, 159, 26, 0.4);
         }
 
         .btn-spin:disabled {
             opacity: 0.6;
             cursor: not-allowed;
-            filter: grayscale(20%);
+            filter: grayscale(30%);
+            transform: none !important;
         }
 
         /* Результат */
-        .result {
-            background: rgba(0, 0, 0, 0.4);
-            border-radius: 15px;
-            padding: 15px 25px;
-            color: #ffffff;
-            font-size: 1.2rem;
-            font-weight: 600;
+        .result-card {
+            background: rgba(10, 16, 30, 0.55);
+            border-radius: 18px;
+            padding: 16px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            margin-bottom: 14px;
+            width: 100%;
             text-align: center;
-            min-height: 55px;
+            transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            min-height: 64px;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            margin-bottom: 20px;
-            width: 100%;
-            transition: all 0.4s ease;
+            gap: 8px;
+        }
+
+        .result-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #ffffff;
+            line-height: 1.35;
             word-break: break-word;
         }
 
-        .result.win {
-            background: rgba(255, 215, 0, 0.2);
+        .result-card.win {
+            background: rgba(255, 215, 0, 0.16);
             border-color: #ffd700;
-            animation: pulse 0.6s ease 3;
+            box-shadow: 0 0 28px rgba(255, 215, 0, 0.35);
+            transform: scale(1.02);
         }
 
-        @keyframes pulse {
-            0%,
-            100% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.04);
-            }
+        .result-card.win .result-title {
+            color: #ffd700;
+            text-shadow: 0 2px 10px rgba(255, 215, 0, 0.4);
         }
 
-        /* Редактор меню */
-        .editor {
+        .winner-card-body {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-top: 4px;
             width: 100%;
+            justify-content: center;
+            text-align: left;
+        }
+
+        .winner-photo {
+            width: 72px;
+            height: 72px;
+            border-radius: 12px;
+            object-fit: cover;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+            flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .winner-info {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 4px;
+            overflow: hidden;
+            max-width: 380px;
         }
 
-        .editor label {
-            color: #aaa;
-            font-size: 0.85rem;
-            letter-spacing: 1px;
-            text-transform: uppercase;
+        .winner-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            align-items: center;
         }
 
-        .editor textarea {
+        .winner-badge {
+            background: rgba(255, 215, 0, 0.2);
+            color: #ffd700;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            border: 1px solid rgba(255, 215, 0, 0.4);
+        }
+
+        .winner-price {
+            background: #2ed573;
+            color: #0b2212;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.78rem;
+            font-weight: 800;
+        }
+
+        .winner-weight {
+            color: #94a3b8;
+            font-size: 0.75rem;
+        }
+
+        .winner-desc {
+            color: #cbd5e1;
+            font-size: 0.8rem;
+            line-height: 1.3;
+            max-height: 48px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        /* История */
+        .history-wrapper {
             width: 100%;
-            padding: 12px 15px;
+            margin-bottom: 14px;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .history-wrapper.visible {
+            display: flex;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 0 4px;
+        }
+
+        .history-label {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .history-clear {
+            background: none;
+            border: none;
+            color: #f87171;
+            font-size: 0.75rem;
+            cursor: pointer;
+            padding: 2px 6px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .history-clear:hover {
+            background: rgba(248, 113, 113, 0.15);
+        }
+
+        .history-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            width: 100%;
+        }
+
+        .history-chip {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            background: rgba(0, 0, 0, 0.3);
+            padding: 4px 10px;
+            font-size: 0.78rem;
+            color: #cbd5e1;
+        }
+
+        /* Спойлер ручного редактора меню */
+        .editor-details {
+            width: 100%;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.25);
+            padding: 8px 14px;
+            margin-top: 4px;
+        }
+
+        .editor-details summary {
+            cursor: pointer;
+            color: #94a3b8;
+            font-size: 0.85rem;
+            font-weight: 600;
+            user-select: none;
+            padding: 4px 0;
+            outline: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .editor-details summary:hover {
+            color: #ffd700;
+        }
+
+        .editor-content {
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .editor-content textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            background: rgba(0, 0, 0, 0.4);
             color: #ffffff;
-            font-size: 1rem;
+            font-size: 0.9rem;
             resize: vertical;
             min-height: 80px;
             font-family: inherit;
@@ -207,79 +470,131 @@
             transition: border 0.3s;
         }
 
-        .editor textarea:focus {
+        .editor-content textarea:focus {
             border-color: #ffd700;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
+            box-shadow: 0 0 12px rgba(255, 215, 0, 0.2);
         }
 
         .btn-update {
             background: transparent;
             color: #ffd700;
-            border: 2px solid #ffd700;
-            padding: 10px 20px;
-            border-radius: 25px;
+            border: 1.5px solid #ffd700;
+            padding: 8px 18px;
+            border-radius: 20px;
             cursor: pointer;
             font-weight: 600;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            transition: all 0.3s;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+            transition: all 0.25s;
             align-self: center;
         }
 
         .btn-update:hover {
             background: rgba(255, 215, 0, 0.15);
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
         }
 
         @media (max-width: 480px) {
             .container {
-                padding: 20px 15px;
-                border-radius: 20px;
+                padding: 18px 12px;
+                border-radius: 22px;
             }
             h1 {
-                font-size: 1.5rem;
+                font-size: 1.45rem;
             }
             .btn-spin {
-                padding: 14px 35px;
-                font-size: 1.2rem;
+                padding: 12px 36px;
+                font-size: 1.15rem;
             }
             .pointer {
-                border-left-width: 15px;
-                border-right-width: 15px;
+                border-left-width: 14px;
+                border-right-width: 14px;
                 border-top-width: 28px;
-                top: -14px;
+                top: -13px;
             }
             .pointer::after {
-                width: 16px;
-                height: 16px;
-                top: -31px;
-                left: -8px;
+                width: 14px;
+                height: 14px;
+                top: -30px;
+                left: -7px;
+            }
+            .chip-btn {
+                padding: 5px 10px;
+                font-size: 0.76rem;
             }
         }
     </style>
 </head>
 <body>
+    <canvas id="confettiCanvas"></canvas>
+
     <div class="container">
-        <h1>🎡 Колесо меню</h1>
+        <div class="header-top">
+            <button class="sound-toggle" id="soundToggle" title="Звук трещотки" aria-label="Переключить звук">🔊</button>
+            <h1>🎡 Колесо меню</h1>
+            <div style="width: 38px;"></div>
+        </div>
         <p class="subtitle">Bistro 24</p>
 
+        <!-- Категории и быстрые выборки -->
+        <div class="categories-wrapper">
+            <div class="categories-label">Выберите категорию:</div>
+            <div class="categories-chips" id="categoriesChips">
+                <button class="chip-btn active badge-special" data-category="random">🎲 Случайные 10</button>
+                <button class="chip-btn" data-category="pizza">🍕 Пицца</button>
+                <button class="chip-btn" data-category="rolls">🍱 Роллы</button>
+                <button class="chip-btn" data-category="burgers">🍔 Бургеры</button>
+                <button class="chip-btn" data-category="shawarma">🌯 Шаурма</button>
+                <button class="chip-btn" data-category="salads">🥗 Салаты</button>
+                <button class="chip-btn" data-category="hot">🍲 Горячее</button>
+                <button class="chip-btn" data-category="drinks">🥤 Напитки</button>
+                <button class="chip-btn" data-category="all">🌟 Все меню</button>
+            </div>
+        </div>
+
+        <!-- Колесо с указателем -->
         <div class="wheel-wrapper">
-            <div class="pointer"></div>
+            <div class="pointer" id="wheelPointer"></div>
             <canvas id="wheelCanvas" width="500" height="500"></canvas>
         </div>
 
         <button class="btn-spin" id="spinButton">Крутить</button>
 
-        <div class="result" id="resultDisplay">Нажмите «Крутить» 🍽️</div>
-
-        <div class="editor">
-<label for="menuItems">📝 Редактировать меню (каждый пункт с новой строки):</label>
-<textarea id="menuItems" rows="6">Пицца
-Суши
-Бургер
-Салат</textarea>
-            <button class="btn-update" id="updateButton">🔄 Обновить колесо</button>
+        <div class="result-card" id="resultCard">
+            <div class="result-title" id="resultDisplay">Нажмите «Крутить» 🍽️</div>
+            <div class="winner-card-body" id="winnerCardBody" style="display: none;">
+                <img class="winner-photo" id="winnerPhoto" src="" alt="Фото блюда" style="display: none;">
+                <div class="winner-info">
+                    <div class="winner-meta">
+                        <span class="winner-badge" id="winnerCategory" style="display: none;"></span>
+                        <span class="winner-price" id="winnerPrice" style="display: none;"></span>
+                        <span class="winner-weight" id="winnerWeight" style="display: none;"></span>
+                    </div>
+                    <div class="winner-desc" id="winnerDesc" style="display: none;"></div>
+                </div>
+            </div>
         </div>
+
+        <!-- История выпадений -->
+        <div class="history-wrapper" id="historyWrapper">
+            <div class="history-header">
+                <span class="history-label">Выпадало ранее:</span>
+                <button class="history-clear" id="historyClear">Очистить</button>
+            </div>
+            <div class="history-chips" id="historyChips"></div>
+        </div>
+
+        <!-- Ручной редактор (спойлер) -->
+        <details class="editor-details" id="editorDetails">
+            <summary>
+                <span>📝 Редактировать меню вручную (<span id="itemsCounter">0</span>)</span>
+                <span style="font-size: 0.75rem; opacity: 0.7;">развернуть ▾</span>
+            </summary>
+            <div class="editor-content">
+                <textarea id="menuItems" rows="5"></textarea>
+                <button class="btn-update" id="updateButton">🔄 Обновить колесо</button>
+            </div>
+        </details>
     </div>
 
     <script src="menu.js"></script>
@@ -289,10 +604,25 @@
             const canvas = document.getElementById('wheelCanvas');
             const ctx = canvas.getContext('2d');
             const spinButton = document.getElementById('spinButton');
+            const resultCard = document.getElementById('resultCard');
             const resultDisplay = document.getElementById('resultDisplay');
+            const winnerCardBody = document.getElementById('winnerCardBody');
+            const winnerPhoto = document.getElementById('winnerPhoto');
+            const winnerCategory = document.getElementById('winnerCategory');
+            const winnerPrice = document.getElementById('winnerPrice');
+            const winnerWeight = document.getElementById('winnerWeight');
+            const winnerDesc = document.getElementById('winnerDesc');
             const menuTextarea = document.getElementById('menuItems');
             const updateButton = document.getElementById('updateButton');
-            const wheelWrapper = document.querySelector('.wheel-wrapper');
+            const pointer = document.getElementById('wheelPointer');
+            const soundToggle = document.getElementById('soundToggle');
+            const categoriesChips = document.getElementById('categoriesChips');
+            const itemsCounter = document.getElementById('itemsCounter');
+            const historyWrapper = document.getElementById('historyWrapper');
+            const historyChips = document.getElementById('historyChips');
+            const historyClear = document.getElementById('historyClear');
+            const confettiCanvas = document.getElementById('confettiCanvas');
+            const confettiCtx = confettiCanvas.getContext('2d');
 
             const offscreenCanvas = document.createElement('canvas');
             const offCtx = offscreenCanvas.getContext('2d');
@@ -301,52 +631,338 @@
             const PI = Math.PI;
             const TAU = 2 * PI;
             let items = [];
-            let rotation = 0; // текущий угол поворота в радианах
+            let allCleanItems = [];
+            let dishMapByName = new Map();
+            let rotation = 0; // угол в радианах
             let isSpinning = false;
             let animationId = null;
+            let currentCategory = 'random';
+            const historyList = [];
 
-            // Цвета для секторов
+            // Звук (Web Audio API)
+            let audioCtx = null;
+            let soundEnabled = localStorage.getItem('bistro_sound') !== 'false';
+            updateSoundIcon();
+
+            function updateSoundIcon() {
+                soundToggle.textContent = soundEnabled ? '🔊' : '🔇';
+                soundToggle.title = soundEnabled ? 'Звук включён' : 'Звук выключен';
+            }
+
+            soundToggle.addEventListener('click', () => {
+                soundEnabled = !soundEnabled;
+                localStorage.setItem('bistro_sound', soundEnabled ? 'true' : 'false');
+                updateSoundIcon();
+                if (soundEnabled) initAudio();
+            });
+
+            function initAudio() {
+                if (!audioCtx) {
+                    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                    if (AudioContextClass) {
+                        audioCtx = new AudioContextClass();
+                    }
+                }
+                if (audioCtx && audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+            }
+
+            function playTick() {
+                if (!soundEnabled || !audioCtx) return;
+                try {
+                    const now = audioCtx.currentTime;
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(650, now);
+                    osc.frequency.exponentialRampToValueAtTime(140, now + 0.035);
+
+                    gain.gain.setValueAtTime(0.18, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.035);
+
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.035);
+
+                    // Тактильное подёргивание стрелки
+                    pointer.classList.add('tick');
+                    setTimeout(() => pointer.classList.remove('tick'), 40);
+                } catch (e) {}
+            }
+
+            function playWinFanfare() {
+                if (!soundEnabled || !audioCtx) return;
+                try {
+                    const now = audioCtx.currentTime;
+                    const chord = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+                    chord.forEach((freq, idx) => {
+                        const osc = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+                        osc.type = 'sine';
+                        osc.frequency.value = freq;
+
+                        const start = now + idx * 0.08;
+                        const duration = 0.45;
+                        gain.gain.setValueAtTime(0.001, start);
+                        gain.gain.linearRampToValueAtTime(0.18, start + 0.03);
+                        gain.gain.exponentialRampToValueAtTime(0.001, start + duration);
+
+                        osc.connect(gain);
+                        gain.connect(audioCtx.destination);
+                        osc.start(start);
+                        osc.stop(start + duration);
+                    });
+                } catch (e) {}
+            }
+
+            // Конфетти
+            let confettiParticles = [];
+            let confettiAnimId = null;
+
+            function resizeConfetti() {
+                confettiCanvas.width = window.innerWidth;
+                confettiCanvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', resizeConfetti);
+            resizeConfetti();
+
+            function triggerConfetti() {
+                const colors = ['#ffd700', '#ff4757', '#2ed573', '#1e90ff', '#ffa502', '#9b59b6', '#ffffff'];
+                confettiParticles = [];
+                const count = 90;
+                const startX = window.innerWidth / 2;
+                const startY = Math.min(window.innerHeight * 0.45, 400);
+
+                for (let i = 0; i < count; i++) {
+                    const angle = Math.random() * TAU;
+                    const speed = 4 + Math.random() * 9;
+                    confettiParticles.push({
+                        x: startX,
+                        y: startY,
+                        vx: Math.cos(angle) * speed,
+                        vy: Math.sin(angle) * speed - 3,
+                        color: colors[Math.floor(Math.random() * colors.length)],
+                        size: 5 + Math.random() * 6,
+                        wobble: Math.random() * TAU,
+                        wobbleSpeed: 0.1 + Math.random() * 0.1,
+                        alpha: 1,
+                        decay: 0.012 + Math.random() * 0.01
+                    });
+                }
+
+                if (!confettiAnimId) {
+                    animateConfetti();
+                }
+            }
+
+            function animateConfetti() {
+                confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+                let alive = 0;
+
+                for (let i = 0; i < confettiParticles.length; i++) {
+                    const p = confettiParticles[i];
+                    if (p.alpha <= 0) continue;
+                    alive++;
+
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vy += 0.22; // гравитация
+                    p.vx *= 0.98; // сопротивление
+                    p.wobble += p.wobbleSpeed;
+                    p.alpha -= p.decay;
+
+                    confettiCtx.save();
+                    confettiCtx.fillStyle = p.color;
+                    confettiCtx.globalAlpha = Math.max(0, p.alpha);
+                    confettiCtx.translate(p.x, p.y);
+                    confettiCtx.rotate(p.wobble);
+                    confettiCtx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+                    confettiCtx.restore();
+                }
+
+                if (alive > 0) {
+                    confettiAnimId = requestAnimationFrame(animateConfetti);
+                } else {
+                    confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+                    confettiAnimId = null;
+                }
+            }
+
+            // Цветовая палитра для секторов
             const colorPalette = [
                 '#FF6B6B', '#4ECDC4', '#FFE66D', '#1A535C',
                 '#FF9F1C', '#6C5CE7', '#FD79A8', '#00B894',
                 '#FDCB6E', '#E17055', '#74B9FF', '#55EFC4',
-                '#FAB1A0', '#81ECEC', '#FFB142', '#B71540'
+                '#FAB1A0', '#81ECEC', '#FFB142', '#B71540',
+                '#A29BFE', '#D63031', '#0984E3', '#00CEC9'
             ];
+
+            // Очистка и нормализация названий меню
+            function cleanItemName(raw) {
+                if (!raw) return '';
+                let name = raw.trim();
+                // Исключаем непищевые строки доставки
+                if (/доставка/i.test(name)) return '';
+                // Удаляем технические префиксы вида "д " (например, "д Соус...", "д Фри")
+                name = name.replace(/^д\s+/i, '');
+                // Чистим двойные пробелы
+                name = name.replace(/\s+/g, ' ');
+                return name.trim();
+            }
+
+            // Категоризация
+            function matchesCategory(name, cat) {
+                const lower = name.toLowerCase();
+                const dish = dishMapByName.get(lower);
+                const catName = dish ? (dish.category || '').toLowerCase() : '';
+
+                switch (cat) {
+                    case 'pizza':
+                        return catName.includes('пицц') || /пицца|хачапури|половинка/i.test(lower);
+                    case 'rolls':
+                        return catName.includes('ролл') || /ролл|сет/i.test(lower);
+                    case 'burgers':
+                        return (catName.includes('фастфуд') && /бургер|хот-дог|сэндвич|фри|наггетсы/i.test(lower)) || /бургер|хот-дог|сэндвич/i.test(lower);
+                    case 'shawarma':
+                        return catName.includes('шаурма') || /шаурма/i.test(lower);
+                    case 'salads':
+                        return /салат|боул/i.test(lower) || (catName.includes('салат') && !/удон/i.test(lower));
+                    case 'hot':
+                        return catName.includes('горячие') || /удон|фетучини|курица по- арабски|курица по-арабски|том ям|жульен|жюльен/i.test(lower);
+                    case 'drinks':
+                        return catName.includes('напит') || /cola|pepsi|fanta|sprite|коктейль|кофе|палпи|апельсин|курага|мохито|вода|денеб|менди|барбикан|гранат|милаф|кинза|меринда|колд брю|тоник/i.test(lower);
+                    case 'all':
+                    default:
+                        return true;
+                }
+            }
+
+            function getRandomSample(arr, n) {
+                const copy = [...arr];
+                for (let i = copy.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [copy[i], copy[j]] = [copy[j], copy[i]];
+                }
+                return copy.slice(0, n);
+            }
+
+            function applyCategory(cat) {
+                currentCategory = cat;
+
+                // Подсветка кнопок категорий
+                document.querySelectorAll('.chip-btn').forEach(btn => {
+                    if (btn.getAttribute('data-category') === cat) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+
+                let filtered = [];
+                if (cat === 'random') {
+                    // Случайные 10 основных блюд (исключая чистые соусы и доставку)
+                    const foodOnly = allCleanItems.filter(item => !/соус\b/i.test(item));
+                    filtered = getRandomSample(foodOnly.length >= 10 ? foodOnly : allCleanItems, 10);
+                } else if (cat === 'all') {
+                    filtered = [...allCleanItems];
+                } else {
+                    filtered = allCleanItems.filter(item => matchesCategory(item, cat));
+                    if (filtered.length < 2) {
+                        filtered = allCleanItems.slice(0, 10);
+                    }
+                }
+
+                menuTextarea.value = filtered.join('\n');
+                resetWheel();
+            }
+
+            // Обработчики кнопок категорий
+            categoriesChips.addEventListener('click', (e) => {
+                const btn = e.target.closest('.chip-btn');
+                if (!btn) return;
+                const cat = btn.getAttribute('data-category');
+                applyCategory(cat);
+            });
 
             // Инициализация
             function parseItems() {
                 const raw = menuTextarea.value;
                 items = raw.split('\n')
-                    .map(s => s.trim())
+                    .map(s => cleanItemName(s))
                     .filter(s => s.length > 0);
+
                 if (items.length < 2) {
                     items = ['Пицца', 'Суши', 'Бургер', 'Салат'];
                     menuTextarea.value = items.join('\n');
                 }
+
+                itemsCounter.textContent = items.length;
                 buildWheelImage();
             }
 
             function initMenu() {
-                if (typeof MENU_ITEMS !== 'undefined' && MENU_ITEMS.length >= 2) {
-                    menuTextarea.value = MENU_ITEMS.join('\n');
+                dishMapByName.clear();
+                let source = [];
+                if (typeof MENU_DATA !== 'undefined' && Array.isArray(MENU_DATA)) {
+                    MENU_DATA.forEach(dish => {
+                        const clean = cleanItemName(dish.name);
+                        if (clean) {
+                            dishMapByName.set(clean.toLowerCase(), dish);
+                        }
+                    });
                 }
-                parseItems();
-                drawWheel();
+
+                if (typeof MENU_ITEMS !== 'undefined' && Array.isArray(MENU_ITEMS)) {
+                    source = MENU_ITEMS;
+                } else if (dishMapByName.size > 0) {
+                    source = Array.from(dishMapByName.values()).map(d => d.name);
+                }
+
+                allCleanItems = source
+                    .map(cleanItemName)
+                    .filter(s => s.length > 0);
+
+                // Убираем дубликаты
+                allCleanItems = Array.from(new Set(allCleanItems));
+
+                if (allCleanItems.length < 2) {
+                    allCleanItems = ['Пицца Пепперони', 'Ролл Филадельфия', 'Бургер Мясной', 'Шаурма в Лаваше', 'Цезарь с курицей', 'Том Ям', 'Хот-Дог в Булке', 'Удон с курицей'];
+                }
+
+                // По умолчанию открываем "Случайные 10" для идеального визуального восприятия
+                applyCategory('random');
             }
 
+            // Отрисовка колеса на оффскрин-холсте с поддержкой High-DPI
             function buildWheelImage() {
-                const w = canvas.width;
-                const h = canvas.height;
-                const centerX = w / 2;
-                const centerY = h / 2;
-                const radius = Math.min(centerX, centerY) - 15;
+                const dpr = Math.min(window.devicePixelRatio || 1, 2);
+                const size = 500;
+                const scaledSize = size * dpr;
 
-                offscreenCanvas.width = w;
-                offscreenCanvas.height = h;
+                canvas.width = scaledSize;
+                canvas.height = scaledSize;
+                offscreenCanvas.width = scaledSize;
+                offscreenCanvas.height = scaledSize;
+
+                offCtx.setTransform(1, 0, 0, 1, 0, 0);
+                offCtx.clearRect(0, 0, scaledSize, scaledSize);
+                offCtx.scale(dpr, dpr);
+
+                const centerX = size / 2;
+                const centerY = size / 2;
+                const radius = Math.min(centerX, centerY) - 15;
 
                 if (items.length === 0) return;
 
                 const arcSize = TAU / items.length;
+
+                // Динамический расчёт размера шрифта
+                let fontSize = 15;
+                if (items.length > 35) fontSize = 10;
+                else if (items.length > 20) fontSize = 12;
+                else if (items.length > 12) fontSize = 13.5;
 
                 for (let i = 0; i < items.length; i++) {
                     const startAngle = -PI / 2 + i * arcSize;
@@ -361,23 +977,24 @@
                     offCtx.fillStyle = color;
                     offCtx.fill();
 
-                    offCtx.strokeStyle = 'rgba(255,255,255,0.3)';
-                    offCtx.lineWidth = 2;
+                    offCtx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
+                    offCtx.lineWidth = 1.5;
                     offCtx.stroke();
 
+                    // Текст сектора
                     offCtx.save();
                     offCtx.translate(centerX, centerY);
                     offCtx.rotate(startAngle + arcSize / 2);
                     offCtx.textAlign = 'right';
                     offCtx.fillStyle = '#ffffff';
-                    offCtx.font = 'bold 16px "Segoe UI", Arial, sans-serif';
-                    offCtx.shadowColor = 'rgba(0,0,0,0.5)';
-                    offCtx.shadowBlur = 6;
-                    offCtx.shadowOffsetX = 2;
-                    offCtx.shadowOffsetY = 2;
+                    offCtx.font = `bold ${fontSize}px "Segoe UI", system-ui, sans-serif`;
+                    offCtx.shadowColor = 'rgba(0, 0, 0, 0.6)';
+                    offCtx.shadowBlur = 5;
+                    offCtx.shadowOffsetX = 1;
+                    offCtx.shadowOffsetY = 1;
 
                     const text = items[i];
-                    const maxWidth = radius - 40;
+                    const maxWidth = radius - 45;
                     let displayText = text;
 
                     if (offCtx.measureText(text).width > maxWidth) {
@@ -388,21 +1005,24 @@
                         displayText = truncated + '…';
                     }
 
-                    offCtx.fillText(displayText, radius - 25, 6);
+                    offCtx.fillText(displayText, radius - 20, fontSize * 0.35);
                     offCtx.restore();
                 }
             }
 
             function drawWheel() {
-                const w = canvas.width;
-                const h = canvas.height;
-                const centerX = w / 2;
-                const centerY = h / 2;
+                const dpr = Math.min(window.devicePixelRatio || 1, 2);
+                const size = 500;
+                const scaledSize = size * dpr;
+                const centerX = scaledSize / 2;
+                const centerY = scaledSize / 2;
 
-                ctx.clearRect(0, 0, w, h);
+                ctx.setTransform(1, 0, 0, 1, 0, 0);
+                ctx.clearRect(0, 0, scaledSize, scaledSize);
 
                 if (items.length === 0) return;
 
+                // Вращение сектора
                 ctx.save();
                 ctx.translate(centerX, centerY);
                 ctx.rotate(rotation);
@@ -410,80 +1030,68 @@
                 ctx.drawImage(offscreenCanvas, 0, 0);
                 ctx.restore();
 
-                const centerCircle = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, 35);
+                // Центральная декоративная втулка колеса
+                const centerRadius = 36 * dpr;
+                const centerCircle = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, centerRadius);
                 centerCircle.addColorStop(0, '#ffffff');
-                centerCircle.addColorStop(0.7, '#e0e0e0');
-                centerCircle.addColorStop(1, '#aaaaaa');
+                centerCircle.addColorStop(0.65, '#e2e8f0');
+                centerCircle.addColorStop(1, '#94a3b8');
+
                 ctx.beginPath();
-                ctx.arc(centerX, centerY, 35, 0, TAU);
+                ctx.arc(centerX, centerY, centerRadius, 0, TAU);
                 ctx.fillStyle = centerCircle;
                 ctx.fill();
-                ctx.strokeStyle = 'rgba(255,255,255,0.8)';
-                ctx.lineWidth = 3;
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
+                ctx.lineWidth = 3.5 * dpr;
                 ctx.stroke();
 
+                // Декоративные заклёпки по кругу
+                const dotRingRadius = 26 * dpr;
                 for (let i = 0; i < 12; i++) {
                     const angle = (i / 12) * TAU;
-                    const dotX = centerX + Math.cos(angle) * 25;
-                    const dotY = centerY + Math.sin(angle) * 25;
+                    const dotX = centerX + Math.cos(angle) * dotRingRadius;
+                    const dotY = centerY + Math.sin(angle) * dotRingRadius;
                     ctx.beginPath();
-                    ctx.arc(dotX, dotY, 3, 0, TAU);
-                    ctx.fillStyle = '#888';
+                    ctx.arc(dotX, dotY, 2.5 * dpr, 0, TAU);
+                    ctx.fillStyle = '#64748b';
                     ctx.fill();
                 }
             }
 
-            // Определение победителя
+            // Абсолютно точный и детерминированный расчёт победителя
             function getWinner() {
                 if (items.length === 0) return '';
                 const arcSize = TAU / items.length;
-                // Нормализуем угол указателя (верхняя точка = -PI/2 = 3*PI/2)
-                const pointerAngle = (3 * PI / 2) % TAU;
-
-                for (let i = 0; i < items.length; i++) {
-                    let start = (rotation - PI / 2 + i * arcSize) % TAU;
-                    let end = (start + arcSize) % TAU;
-
-                    // Нормализуем углы в [0, 2*PI)
-                    if (start < 0) start += TAU;
-                    if (end < 0) end += TAU;
-
-                    if (end < start) {
-                        // Сектор пересекает 0 радиан
-                        if (pointerAngle >= start || pointerAngle < end) {
-                            return items[i];
-                        }
-                    } else {
-                        if (pointerAngle >= start && pointerAngle < end) {
-                            return items[i];
-                        }
-                    }
-                }
-                // На всякий случай вернём первый элемент
-                return items[0];
+                let relAngle = (-rotation) % TAU;
+                if (relAngle < 0) relAngle += TAU;
+                const winnerIndex = Math.floor(relAngle / arcSize) % items.length;
+                return items[winnerIndex];
             }
 
             // Анимация вращения
             function spin() {
                 if (isSpinning || items.length === 0) return;
 
+                initAudio();
                 isSpinning = true;
                 spinButton.disabled = true;
-                resultDisplay.classList.remove('win');
+                resultCard.classList.remove('win');
                 resultDisplay.textContent = 'Крутим... 🎰';
                 canvas.classList.add('spinning');
 
-                // Случайные параметры вращения
-                const extraTurns = 4 + Math.floor(Math.random() * 6); // 4-9 полных оборотов
-                const randomAngle = Math.random() * TAU; // случайный доворот
+                // Случайные параметры вращения (4-8 полных оборотов)
+                const extraTurns = 5 + Math.floor(Math.random() * 5);
+                const randomAngle = Math.random() * TAU;
                 const targetRotation = rotation + extraTurns * TAU + randomAngle;
 
                 const startRotation = rotation;
                 const totalRotation = targetRotation - startRotation;
-                const duration = 4000 + Math.random() * 2500; // 4-6.5 секунд
+                const duration = 4200 + Math.random() * 1800; // 4.2 - 6 сек
                 const startTime = performance.now();
 
-                // Функция плавности (ease-out кубическая)
+                const arcSize = TAU / items.length;
+                let lastSector = Math.floor((-startRotation) / arcSize);
+
                 function easeOutCubic(t) {
                     return 1 - Math.pow(1 - t, 3);
                 }
@@ -494,6 +1102,14 @@
                     const easedProgress = easeOutCubic(progress);
 
                     rotation = startRotation + totalRotation * easedProgress;
+
+                    // Звуковой щелчок при пересечении сектора
+                    const currentSector = Math.floor((-rotation) / arcSize);
+                    if (currentSector !== lastSector) {
+                        playTick();
+                        lastSector = currentSector;
+                    }
+
                     drawWheel();
 
                     if (progress < 1) {
@@ -509,6 +1125,28 @@
                 animationId = requestAnimationFrame(animate);
             }
 
+            function addHistoryItem(winner) {
+                if (!winner) return;
+                historyList.unshift(winner);
+                if (historyList.length > 5) historyList.pop();
+
+                historyChips.innerHTML = '';
+                historyList.forEach(item => {
+                    const chip = document.createElement('span');
+                    chip.className = 'history-chip';
+                    chip.textContent = item;
+                    historyChips.appendChild(chip);
+                });
+
+                historyWrapper.classList.add('visible');
+            }
+
+            historyClear.addEventListener('click', () => {
+                historyList.length = 0;
+                historyChips.innerHTML = '';
+                historyWrapper.classList.remove('visible');
+            });
+
             function onSpinComplete() {
                 isSpinning = false;
                 spinButton.disabled = false;
@@ -517,17 +1155,54 @@
 
                 const winner = getWinner();
                 resultDisplay.textContent = `🎉 Выпало: ${winner}`;
-                resultDisplay.classList.add('win');
+                resultCard.classList.add('win');
 
-                // Виброотклик на мобильных устройствах
-                if (navigator.vibrate) {
-                    navigator.vibrate([100, 50, 100]);
+                const dish = dishMapByName.get(winner.toLowerCase());
+                if (dish) {
+                    if (dish.photo) {
+                        winnerPhoto.src = dish.photo;
+                        winnerPhoto.style.display = 'block';
+                        winnerPhoto.onerror = () => { winnerPhoto.style.display = 'none'; };
+                    } else {
+                        winnerPhoto.style.display = 'none';
+                    }
+                    if (dish.category) {
+                        winnerCategory.textContent = dish.category;
+                        winnerCategory.style.display = 'inline-block';
+                    } else {
+                        winnerCategory.style.display = 'none';
+                    }
+                    if (dish.price) {
+                        winnerPrice.textContent = `${dish.price} ₽`;
+                        winnerPrice.style.display = 'inline-block';
+                    } else {
+                        winnerPrice.style.display = 'none';
+                    }
+                    if (dish.weight) {
+                        winnerWeight.textContent = dish.weight;
+                        winnerWeight.style.display = 'inline-block';
+                    } else {
+                        winnerWeight.style.display = 'none';
+                    }
+                    if (dish.description) {
+                        winnerDesc.textContent = dish.description;
+                        winnerDesc.style.display = '-webkit-box';
+                    } else {
+                        winnerDesc.style.display = 'none';
+                    }
+                    winnerCardBody.style.display = 'flex';
+                } else {
+                    winnerCardBody.style.display = 'none';
                 }
 
-                // Убираем анимацию pulse через некоторое время
-                setTimeout(() => {
-                    resultDisplay.classList.remove('win');
-                }, 2000);
+                playWinFanfare();
+                triggerConfetti();
+                addHistoryItem(winner);
+
+                // Виброотклик на смартфонах
+                if (navigator.vibrate) {
+                    navigator.vibrate([100, 60, 120]);
+                }
             }
 
             function resetWheel() {
@@ -542,20 +1217,20 @@
                 parseItems();
                 drawWheel();
                 resultDisplay.textContent = 'Нажмите «Крутить» 🍽️';
-                resultDisplay.classList.remove('win');
+                resultCard.classList.remove('win');
+                winnerCardBody.style.display = 'none';
             }
 
-            // Обработчики событий
+            // Слушатели событий
             spinButton.addEventListener('click', spin);
 
             updateButton.addEventListener('click', () => {
+                // Если редактировали вручную, сбрасываем подсветку категорий
+                document.querySelectorAll('.chip-btn').forEach(btn => btn.classList.remove('active'));
                 resetWheel();
             });
 
-            // Инициализация при загрузке
-            initMenu();
-
-            // Поддержка клавиши пробел для вращения
+            // Пробел для вращения
             document.addEventListener('keydown', (e) => {
                 if (e.code === 'Space' && !isSpinning && document.activeElement !== menuTextarea) {
                     e.preventDefault();
@@ -563,12 +1238,14 @@
                 }
             });
 
-            // Адаптация размера канваса при ресайзе (сохраняем пропорции)
-            function handleResize() {
-                // Canvas сохраняет внутренний размер 500x500,
-                // CSS растягивает его, качество остаётся хорошим.
-            }
-            window.addEventListener('resize', handleResize);
+            // Масштабирование при ресайзе
+            window.addEventListener('resize', () => {
+                buildWheelImage();
+                drawWheel();
+            });
+
+            // Запуск инициализации
+            initMenu();
         })();
     </script>
 </body>
