@@ -1,6 +1,51 @@
 @BistroApi_HostAddress = http://localhost:5041
 
-GET {{BistroApi_HostAddress}}/weatherforecast/
+### Получить все блюда
+GET {{BistroApi_HostAddress}}/api/menu
 Accept: application/json
 
-###
+### Получить случайные 10 блюд для колеса
+GET {{BistroApi_HostAddress}}/api/menu/random?count=10
+Accept: application/json
+
+### Фильтрация по категории Pizza
+GET {{BistroApi_HostAddress}}/api/menu?category=Pizza
+Accept: application/json
+
+### Поиск по названию
+GET {{BistroApi_HostAddress}}/api/menu?search=Цезарь
+Accept: application/json
+
+### Получить блюдо по ID
+GET {{BistroApi_HostAddress}}/api/menu/1
+Accept: application/json
+
+### Создать новое блюдо
+POST {{BistroApi_HostAddress}}/api/menu
+Content-Type: application/json
+
+{
+  "name": "Новая Авторская Пицца",
+  "category": "Pizza",
+  "price": 420.0,
+  "weight": "680 г",
+  "description": "Сливочный соус, моцарелла, трюфельное масло, шампиньоны",
+  "photoUrl": "https://example.com/pizza.jpg",
+  "isAvailable": true
+}
+
+### Обновить блюдо
+PUT {{BistroApi_HostAddress}}/api/menu/1
+Content-Type: application/json
+
+{
+  "name": "Запеченный Ролл с курицей (Обновленный)",
+  "category": "Rolls",
+  "price": 290.0,
+  "weight": "430 г",
+  "description": "Обновленный рецепт с соусом унаги",
+  "isAvailable": true
+}
+
+### Удалить блюдо
+DELETE {{BistroApi_HostAddress}}/api/menu/1
