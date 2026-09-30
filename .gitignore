@@ -1,11 +1,22 @@
 ## .NET Core / C#
 [Bb]in/
 [Oo]bj/
+**/bin/
+**/obj/
 [Ll]og/
 [Ll]ogs/
+**/logs/
+
+# Database files
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
 
 # Visual Studio files
 .vs/
+**/.vs/
 *.user
 *.userosscache
 *.suo
@@ -36,13 +47,10 @@ x86/
 [Aa][Rr][Mm]/
 [Aa][Rr][Mm]64/
 bld/
-[Bb]in/
-[Oo]bj/
-[Ll]og/
-[Ll]ogs/
 
 # Rider
 .idea/
+**/.idea/
 *.sln.iml
 
 # OS files
